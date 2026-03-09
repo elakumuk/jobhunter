@@ -96,16 +96,81 @@ def ai_generate(prompt, fallback="AI kullanılamadı."):
     return fallback
 
 ELA_PROFILE = """
-Candidate Profile:
-- Name: Ela Kumuk
-- Education: M.S. Business Analytics (MSBA), Brandeis University, graduating December 2026
-- Undergrad: Double major in Business & Psychology, Minor in Studio Art
-- Technical Skills: Python, R, SQL, Tableau, Excel, MySQL, Jupyter Notebook, Google Colab
-- Analytics: Statistical Analysis, Econometrics, Regression, Hypothesis Testing, A/B Testing, Marketing Analytics, Data Visualization
-- Coursework: Python for Business Analytics, Econometrics with R, Marketing Analytics, Information Visualization
-- Unique: Consumer Psychology background, E-commerce experience (family business), bilingual (Turkish/English)
-- Visa: F1 Student (OPT eligible, needs H1B sponsorship)
-- Location: Waltham, MA
+Candidate: Ela Kumuk | Waltham, MA | 857-370-9900 | elakumuk@brandeis.edu
+
+EDUCATION:
+- M.S. Business Analytics (STEM-Designated), Brandeis School of Business, Jan 2026 - Feb 2027
+  Coursework: Analyzing Big Data, Python for Business Analytics, Marketing Analytics
+- B.A. Business & B.A. Psychology (STEM-Designated), Brandeis University, Aug 2022 - Feb 2026
+  Coursework: Statistics, Intro to Data Analytics with Excel, Research Methods, Competitive Strategy
+
+TECHNICAL SKILLS:
+- Programming: Python, SQL, R, SAS, STATA, C++, JAVA
+- Software: Advanced Excel, Tableau, Power BI, Bloomberg
+- Analytics: Data Warehousing, Data Visualization, Predictive Modeling, Marketing Analytics, Data Mining
+
+WORK EXPERIENCE:
+1. MissFlora USA (Business Analyst Intern, Summer 2025): Analyzed SKU-level CPG performance using Python/Pandas, queried market share data with SQL for US retail expansion, automated supply chain KPI monitoring
+2. Kumukh Parfums (Founder, 2021-2024): Built demand forecasting model reducing overhead 22%, created customer segmentation framework boosting CLV by 30%, digitized supply chain improving procurement efficiency 18%
+3. Ford Motors R&D (Intern, Summer 2020): Mapped R&D workflows using Excel/Python for process automation, analyzed metrics and visualized trends in Tableau
+
+RESEARCH:
+- Koc University: Led educational app development for visually impaired students
+- Yildiz Technical University: Contributed to peer-reviewed IEEE publication on cell classification
+
+ACTIVITIES: NABE, Brandeis Consulting Association, Data Analytics Club, Entrepreneurship & Tech Association
+LANGUAGES: Turkish (Native), English (Fluent), French (Beginner)
+"""
+
+def build_cover_letter_prompt(company, title, location):
+    """Build Hiatt Career Center-style cover letter prompt."""
+    return f"""Write a cover letter following the Brandeis Hiatt Career Center format exactly.
+This must sound like a real person wrote it — not AI. No generic filler. Every sentence must earn its place.
+
+CANDIDATE PROFILE:
+{ELA_PROFILE}
+
+JOB:
+- Company: {company}
+- Position: {title}
+- Location: {location}
+
+STRICT FORMAT (3 sections):
+
+**1st Section — Why this employer + Who are you + Why writing:**
+- Open with something SPECIFIC about {company} — a recent initiative, product, value, or news that genuinely connects to Ela's interests. Do actual reasoning about what {company} does.
+- Show the reader you know this company. NOT generic "I admire your data-driven culture" — be SPECIFIC.
+- Introduce Ela in a way that naturally connects to the role. She founded a fragrance brand (Kumukh Parfums) at 16 and scaled it for 3 years — that shows entrepreneurial drive. She interned at MissFlora USA doing real CPG analytics. Use whichever is more relevant.
+
+**2nd Section (1-2 paragraphs) — How you are qualified:**
+- Pick 3-4 qualifications from the job title/industry and give SPECIFIC examples from Ela's experience.
+- DO NOT just list skills. Tell mini-stories with results:
+  * At MissFlora: analyzed SKU-level CPG data with Python/Pandas, queried pricing data with SQL for retail expansion
+  * At Kumukh Parfums: built demand forecasting model (22% overhead reduction), customer segmentation boosting CLV by 30%
+  * At Ford R&D: mapped workflows with Excel/Python, visualized trends in Tableau
+  * IEEE publication from Yildiz Technical University research
+- Connect each example back to what this specific role needs.
+- If it's finance → emphasize Bloomberg, quantitative modeling, data warehousing
+- If it's tech → emphasize Python, SQL, predictive modeling, big data coursework
+- If it's consulting → emphasize MissFlora client-facing work, Kumukh Parfums business strategy
+- If it's marketing → emphasize Marketing Analytics coursework, customer segmentation, CLV analysis
+
+**3rd Section — Closing:**
+- Reiterate specific interest in this role at {company} (not generic)
+- Express eagerness to discuss further
+- Thank the reader
+- Keep it to 2-3 sentences max
+
+CRITICAL RULES:
+- NEVER mention H1B, visa, sponsorship, or work authorization. Not a single word.
+- NEVER use cliches: "I am writing to express my interest", "I am excited about the opportunity", "passionate about data"
+- NEVER say "As a [something], I..."  to start the letter
+- DO NOT repeat the resume — provide context and stories around the experiences
+- Total length: 300-400 words. Not a word more.
+- Use professional but warm tone. Confident, not arrogant.
+- Header: Ela Kumuk | Waltham, MA | elakumuk@brandeis.edu | {datetime.now().strftime('%B %d, %Y')}
+- Address to: Dear Hiring Manager,
+- Close with: Sincerely, Ela Kumuk
 """
 
 # --- SMART FILTER LOGIC ---
@@ -411,16 +476,7 @@ elif page == "🚀 Batch Apply":
 
             try:
                 # Cover Letter
-                prompt_cl = f"""Write a professional cover letter (4 paragraphs, under 400 words).
-Not generic. No cliches. Specific to this company/role.
-
-{ELA_PROFILE}
-
-Job: {title} at {company}, {job.get('location', '')}
-
-Format: Header with name/contact/date, "Dear Hiring Manager,", 4 paragraphs, "Sincerely, Ela Kumuk"
-Highlight Psychology+Business+Analytics as differentiator. Mention specific coursework."""
-
+                prompt_cl = build_cover_letter_prompt(company, title, job.get('location', ''))
                 cover = ai_generate(prompt_cl)
                 with open(out_dir / "cover_letter.txt", 'w') as f:
                     f.write(cover)
@@ -503,10 +559,7 @@ elif page == "📝 Tek Başvuru":
     with tab1:
         if st.button("📝 AI Cover Letter Oluştur", key="gen_cl"):
             with st.spinner("AI yazıyor..."):
-                prompt = f"""Write a professional cover letter (4 paragraphs, under 400 words). Not generic.
-{ELA_PROFILE}
-Job: {job['title']} at {job['company']}, {job['location']}
-Format: Header, Dear Hiring Manager, 4 paragraphs, Sincerely Ela Kumuk."""
+                prompt = build_cover_letter_prompt(job['company'], job['title'], job['location'])
                 result = ai_generate(prompt)
                 st.session_state['cover_letter'] = result
 

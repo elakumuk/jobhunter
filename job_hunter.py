@@ -75,17 +75,30 @@ def ai_generate(prompt, fallback="AI kullanılamadı."):
     return fallback
 
 ELA_PROFILE = """
-Candidate Profile:
-- Name: Ela Kumuk
-- Education: M.S. Business Analytics (MSBA), Brandeis University, graduating December 2026
-- Undergrad: Double major in Business & Psychology, Minor in Studio Art
-- Technical Skills: Python, R, SQL, Tableau, Excel, MySQL, Jupyter Notebook, Google Colab
-- Analytics: Statistical Analysis, Econometrics, Regression, Hypothesis Testing, A/B Testing, Marketing Analytics, Data Visualization
-- Coursework: Python for Business Analytics, Econometrics with R, Marketing Analytics, Information Visualization, Intro to Data Analytics
-- Unique strengths: Consumer Psychology background, E-commerce experience (family business), Brand Strategy, bilingual (Turkish/English)
-- Visa: F1 Student (OPT eligible, needs H1B sponsorship)
-- Location: Waltham, MA (open to relocation)
-- Contact: elakumuk@icloud.com, linkedin.com/in/elakumuk
+Candidate: Ela Kumuk | Waltham, MA | 857-370-9900 | elakumuk@brandeis.edu
+
+EDUCATION:
+- M.S. Business Analytics (STEM-Designated), Brandeis School of Business, Jan 2026 - Feb 2027
+  Coursework: Analyzing Big Data, Python for Business Analytics, Marketing Analytics
+- B.A. Business & B.A. Psychology (STEM-Designated), Brandeis University, Aug 2022 - Feb 2026
+  Coursework: Statistics, Intro to Data Analytics with Excel, Research Methods, Competitive Strategy
+
+TECHNICAL SKILLS:
+- Programming: Python, SQL, R, SAS, STATA, C++, JAVA
+- Software: Advanced Excel, Tableau, Power BI, Bloomberg
+- Analytics: Data Warehousing, Data Visualization, Predictive Modeling, Marketing Analytics, Data Mining
+
+WORK EXPERIENCE:
+1. MissFlora USA (Business Analyst Intern, Summer 2025): Analyzed SKU-level CPG performance using Python/Pandas, queried market share data with SQL for US retail expansion, automated supply chain KPI monitoring
+2. Kumukh Parfums (Founder, 2021-2024): Built demand forecasting model reducing overhead 22%, created customer segmentation framework boosting CLV by 30%, digitized supply chain improving procurement efficiency 18%
+3. Ford Motors R&D (Intern, Summer 2020): Mapped R&D workflows using Excel/Python for process automation, analyzed metrics and visualized trends in Tableau
+
+RESEARCH:
+- Koc University: Led educational app development for visually impaired students
+- Yildiz Technical University: Contributed to peer-reviewed IEEE publication on cell classification
+
+ACTIVITIES: NABE, Brandeis Consulting Association, Data Analytics Club, Entrepreneurship & Tech Association
+LANGUAGES: Turkish (Native), English (Fluent), French (Beginner)
 """
 
 # --- CONFIG ---
@@ -341,57 +354,63 @@ def generate_cover_letter(job, resume_data=None):
     title = job.get('title', '[Position]')
     location = job.get('location', '')
 
-    prompt = f"""Write a professional, compelling cover letter for this job application.
-Keep it to 4 paragraphs, under 400 words. Be specific, not generic. Sound confident but not arrogant.
-Do NOT use cliches like "I am writing to express my interest" or "I am excited about the opportunity".
-Start with something engaging and specific to the company/role.
+    prompt = f"""Write a cover letter following the Brandeis Hiatt Career Center format exactly.
+This must sound like a real person wrote it — not AI. No generic filler. Every sentence must earn its place.
 
+CANDIDATE PROFILE:
 {ELA_PROFILE}
 
-Job Details:
+JOB:
 - Company: {company}
 - Position: {title}
 - Location: {location}
 
-Format the letter with:
-- Header: Ela Kumuk | Waltham, MA | {config['email']} | {datetime.now().strftime('%B %d, %Y')}
-- "Dear Hiring Manager,"
-- 4 paragraphs (opening hook, skills/coursework match, unique value from psych+business combo, closing with call to action)
-- "Sincerely, Ela Kumuk"
+STRICT FORMAT (3 sections):
 
-Important:
-- Highlight the Psychology + Business + Analytics combination as a unique differentiator
-- Mention specific relevant coursework
-- If it's a finance company, emphasize quantitative skills
-- If it's a tech company, emphasize Python/SQL/data engineering
-- If it's consulting, emphasize client communication and business acumen
-- Keep it genuine and personal, not template-like
+**1st Section — Why this employer + Who are you + Why writing:**
+- Open with something SPECIFIC about {company} — a recent initiative, product, value, or news. Do actual reasoning about what {company} does.
+- NOT generic "I admire your data-driven culture" — be SPECIFIC.
+- Introduce Ela naturally connecting to the role. She founded Kumukh Parfums at 16 and scaled it for 3 years. She interned at MissFlora USA doing CPG analytics. Use whichever is more relevant.
+
+**2nd Section (1-2 paragraphs) — How you are qualified:**
+- Pick 3-4 qualifications and give SPECIFIC examples with results:
+  * MissFlora: analyzed SKU-level CPG data with Python/Pandas, queried pricing data with SQL for retail expansion
+  * Kumukh Parfums: built demand forecasting model (22% overhead reduction), customer segmentation boosting CLV by 30%
+  * Ford R&D: mapped workflows with Excel/Python, visualized trends in Tableau
+  * IEEE publication from Yildiz Technical University
+- Connect each example back to what this specific role needs.
+- Finance → Bloomberg, quantitative modeling, data warehousing
+- Tech → Python, SQL, predictive modeling, big data coursework
+- Consulting → MissFlora client-facing work, Kumukh Parfums business strategy
+- Marketing → Marketing Analytics coursework, customer segmentation, CLV analysis
+
+**3rd Section — Closing:**
+- Reiterate specific interest in this role at {company}
+- Express eagerness to discuss further, thank the reader
+- 2-3 sentences max
+
+CRITICAL RULES:
+- NEVER mention H1B, visa, sponsorship, or work authorization
+- NEVER use cliches: "I am writing to express my interest", "I am excited about the opportunity", "passionate about data"
+- NEVER say "As a [something], I..." to start
+- DO NOT repeat the resume — provide context and stories
+- Total length: 300-400 words
+- Professional but warm tone. Confident, not arrogant.
+- Header: Ela Kumuk | Waltham, MA | elakumuk@brandeis.edu | {datetime.now().strftime('%B %d, %Y')}
+- Address to: Dear Hiring Manager,
+- Close with: Sincerely, Ela Kumuk
 """
 
     ai_letter = ai_generate(prompt)
     if ai_letter and "AI kullanılamadı" not in ai_letter:
         return ai_letter
 
-    # Fallback to template
-    return _template_cover_letter(job, config)
-
-def _template_cover_letter(job, config):
-    """Fallback template cover letter if AI is unavailable."""
-    company = job.get('company', '[Company]')
-    title = job.get('title', '[Position]')
-    return f"""{config['name']}
-{config['location']} | {config['email']}
-{datetime.now().strftime('%B %d, %Y')}
+    # Fallback
+    return f"""Ela Kumuk | Waltham, MA | elakumuk@brandeis.edu | {datetime.now().strftime('%B %d, %Y')}
 
 Dear Hiring Manager,
 
-I am writing to express my interest in the {title} position at {company}. I am completing my M.S. in Business Analytics at Brandeis University (December 2026), with a background in Business and Psychology.
-
-My coursework in Python, Econometrics with R, Marketing Analytics, and Data Visualization has prepared me with strong technical skills. I am proficient in Python, R, SQL, and Tableau.
-
-What sets me apart is my combination of quantitative analytics training with a deep understanding of consumer behavior from my Psychology background. This allows me to not just analyze data, but understand the human story behind it.
-
-I would welcome the chance to discuss how my skills align with your needs. Thank you for your consideration.
+[AI unavailable — please try again later]
 
 Sincerely,
 {config['name']}
