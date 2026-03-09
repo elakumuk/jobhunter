@@ -1,0 +1,2 @@
+job_id,company,title,location,url,date_found,status,date_applied,contact_name,contact_linkedin,contact_email,notes,match_score,h1b_sponsor
+SAMPLE-001,Example Corp,Data Analyst,"Boston, MA",https://example.com,2026-03-01,new,,,,,,70,check
