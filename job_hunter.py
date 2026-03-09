@@ -77,7 +77,7 @@ def ai_generate(prompt, fallback="AI kullanılamadı."):
 ELA_PROFILE = """
 Candidate Profile:
 - Name: Ela Kumuk
-- Education: M.S. Business Analytics (MSBA), Brandeis University, graduating May 2026
+- Education: M.S. Business Analytics (MSBA), Brandeis University, graduating December 2026
 - Undergrad: Double major in Business & Psychology, Minor in Studio Art
 - Technical Skills: Python, R, SQL, Tableau, Excel, MySQL, Jupyter Notebook, Google Colab
 - Analytics: Statistical Analysis, Econometrics, Regression, Hypothesis Testing, A/B Testing, Marketing Analytics, Data Visualization
@@ -103,7 +103,7 @@ DEFAULT_CONFIG = {
     "location": "Waltham, MA",
     "university": "Brandeis University",
     "degree": "M.S. Business Analytics (MSBA)",
-    "graduation": "May 2026",
+    "graduation": "December 2026",
     "target_roles": [
         "Data Analyst",
         "Business Analyst",
@@ -385,7 +385,7 @@ def _template_cover_letter(job, config):
 
 Dear Hiring Manager,
 
-I am writing to express my interest in the {title} position at {company}. I am completing my M.S. in Business Analytics at Brandeis University (May 2026), with a background in Business and Psychology.
+I am writing to express my interest in the {title} position at {company}. I am completing my M.S. in Business Analytics at Brandeis University (December 2026), with a background in Business and Psychology.
 
 My coursework in Python, Econometrics with R, Marketing Analytics, and Data Visualization has prepared me with strong technical skills. I am proficient in Python, R, SQL, and Tableau.
 

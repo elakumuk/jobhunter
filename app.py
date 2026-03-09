@@ -85,7 +85,7 @@ def ai_generate(prompt, fallback="AI kullanılamadı."):
 ELA_PROFILE = """
 Candidate Profile:
 - Name: Ela Kumuk
-- Education: M.S. Business Analytics (MSBA), Brandeis University, graduating May 2026
+- Education: M.S. Business Analytics (MSBA), Brandeis University, graduating December 2026
 - Undergrad: Double major in Business & Psychology, Minor in Studio Art
 - Technical Skills: Python, R, SQL, Tableau, Excel, MySQL, Jupyter Notebook, Google Colab
 - Analytics: Statistical Analysis, Econometrics, Regression, Hypothesis Testing, A/B Testing, Marketing Analytics, Data Visualization
