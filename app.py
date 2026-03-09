@@ -40,14 +40,27 @@ def load_config():
     except Exception:
         return {}
 
+CSV_HEADERS = [
+    "job_id", "company", "title", "location", "url", "date_found",
+    "status", "date_applied", "contact_name", "contact_linkedin",
+    "contact_email", "notes", "match_score", "h1b_sponsor"
+]
+
 @st.cache_data(ttl=5)
 def load_jobs():
     if not JOBS_FILE.exists():
-        return pd.DataFrame()
-    df = pd.read_csv(JOBS_FILE)
-    if 'match_score' in df.columns:
-        df['match_score'] = pd.to_numeric(df['match_score'], errors='coerce').fillna(0).astype(int)
-    return df
+        # Create empty CSV with headers
+        pd.DataFrame(columns=CSV_HEADERS).to_csv(JOBS_FILE, index=False)
+        return pd.DataFrame(columns=CSV_HEADERS)
+    try:
+        df = pd.read_csv(JOBS_FILE)
+        if df.empty:
+            return pd.DataFrame(columns=CSV_HEADERS)
+        if 'match_score' in df.columns:
+            df['match_score'] = pd.to_numeric(df['match_score'], errors='coerce').fillna(0).astype(int)
+        return df
+    except Exception:
+        return pd.DataFrame(columns=CSV_HEADERS)
 
 def save_jobs(df):
     df.to_csv(JOBS_FILE, index=False)
@@ -166,8 +179,8 @@ if page == "📊 Dashboard":
     st.title("📊 Dashboard")
 
     df = load_jobs()
-    if df.empty:
-        st.warning("Henüz iş yok. Terminal'de `python3 job_hunter.py search` çalıştır.")
+    if df.empty or len(df) == 0:
+        st.warning("Henüz iş yok. Terminal'de `python3 job_hunter.py search` çalıştır veya Günlük Rapor sayfasından ara.")
         st.stop()
 
     # KPI Row
@@ -780,6 +793,9 @@ elif page == "🛂 H1B Kontrol":
         st.warning("Henüz iş yok.")
         st.stop()
 
+    import sys
+    if str(BASE_DIR) not in sys.path:
+        sys.path.insert(0, str(BASE_DIR))
     try:
         from h1b_checker import check_h1b_sponsor, KNOWN_H1B_SPONSORS
         h1b_available = True
@@ -853,6 +869,9 @@ elif page == "🔍 İlan Detayları":
         st.warning("Aktif iş yok.")
         st.stop()
 
+    import sys
+    if str(BASE_DIR) not in sys.path:
+        sys.path.insert(0, str(BASE_DIR))
     try:
         from job_scraper import fetch_job_description, extract_requirements
         scraper_available = True
@@ -986,18 +1005,21 @@ elif page == "📅 Günlük Rapor":
     st.subheader("Manuel Arama")
     if st.button("🔄 Şimdi Yeni İş Ara", type="primary", use_container_width=True):
         with st.spinner("GitHub repo'ları taranıyor..."):
-            import subprocess
-            result = subprocess.run(
-                ['python3', str(BASE_DIR / 'daily_digest.py')],
-                capture_output=True, text=True, timeout=60, cwd=str(BASE_DIR)
-            )
-            if result.returncode == 0:
-                st.success("✅ Arama tamamlandı!")
-                st.text(result.stdout[-1000:] if len(result.stdout) > 1000 else result.stdout)
-                load_jobs.clear()
-                st.rerun()
-            else:
-                st.error(f"Hata: {result.stderr[-500:]}")
+            try:
+                import subprocess
+                result = subprocess.run(
+                    ['python3', str(BASE_DIR / 'daily_digest.py')],
+                    capture_output=True, text=True, timeout=60, cwd=str(BASE_DIR)
+                )
+                if result.returncode == 0:
+                    st.success("✅ Arama tamamlandı!")
+                    st.text(result.stdout[-1000:] if len(result.stdout) > 1000 else result.stdout)
+                    load_jobs.clear()
+                    st.rerun()
+                else:
+                    st.error(f"Hata: {result.stderr[-500:]}")
+            except Exception as e:
+                st.error(f"Arama çalıştırılamadı: {e}")
 
     # Cron setup instructions
     st.divider()
